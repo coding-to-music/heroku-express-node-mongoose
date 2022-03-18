@@ -169,3 +169,25 @@ heroku create api-proxy-routing-react-node
 Creating ⬢ api-proxy-routing-react-node... done
 https://api-proxy-routing-react-node.herokuapp.com/ | https://git.heroku.com/api-proxy-routing-react-node.git
 ```
+
+## Set config variables
+
+```bash
+heroku config:set
+
+# for each of these:
+
+TWITTER_CLIENTID=<ID>
+TWITTER_SECRET=<SECRET>
+GITHUB_CLIENTID=<ID>
+GITHUB_SECRET=<SECRET>
+LINKEDIN_CLIENTID=<ID>
+LINKEDIN_SECRET=<SECRET>
+GOOGLE_CLIENTID=<ID>
+GOOGLE_SECRET=<SECRET>
+IMAGER_S3_KEY=AWS_S3_KEY
+IMAGER_S3_SECRET=AWS_S3_SECRET
+IMAGER_S3_BUCKET=AWS_S3_BUCKET
+MONGODB_URL=mongodb+srv://<username>:<password>@cluster0.zadqe.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+
+```
