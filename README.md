@@ -161,7 +161,7 @@ https://api-proxy-routing-react-node.herokuapp.com/api
 ```bash
 git clone https://github.com/mars/heroku-cra-node.git
 cd heroku-cra-node/
-heroku createw
+heroku create
 git push heroku master
 
 # for me
