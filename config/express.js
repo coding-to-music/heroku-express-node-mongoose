@@ -1,48 +1,48 @@
-'use strict';
+"use strict";
 
 /**
  * Module dependencies.
  */
 
-const express = require('express');
-const session = require('express-session');
-const compression = require('compression');
-const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const methodOverride = require('method-override');
-const csrf = require('csurf');
-const cors = require('cors');
-const helmet = require('helmet');
-const upload = require('multer')();
+const express = require("express");
+const session = require("express-session");
+const compression = require("compression");
+const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const methodOverride = require("method-override");
+const csrf = require("csurf");
+const cors = require("cors");
+const helmet = require("helmet");
+const upload = require("multer")();
 
-const MongoStore = require('connect-mongo');
-const flash = require('connect-flash');
-const winston = require('winston');
-const helpers = require('view-helpers');
-const ultimatePagination = require('ultimate-pagination');
-const requireHttps = require('./middlewares/require-https');
-const config = require('./');
-const pkg = require('../package.json');
+const MongoStore = require("connect-mongo");
+const flash = require("connect-flash");
+const winston = require("winston");
+const helpers = require("view-helpers");
+const ultimatePagination = require("ultimate-pagination");
+const requireHttps = require("./middlewares/require-https");
+const config = require("./");
+const pkg = require("../package.json");
 
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || "development";
 
 /**
  * Expose
  */
 
-module.exports = function(app, passport) {
+module.exports = function (app, passport) {
   app.use(
     helmet({
       contentSecurityPolicy: {
         useDefaults: true,
         directives: {
-          'script-src': ["'self'", 'code.jquery.com'],
-          'style-src': ["'self'", "'unsafe-inline'", 'netdna.bootstrapcdn.com'],
-          'img-src': ["'self'", 'data:', 'img.shields.io'],
-          'frame-src': ["'self'", 'ghbtns.com']
-        }
-      }
+          "script-src": ["'self'", "code.jquery.com"],
+          "style-src": ["'self'", "'unsafe-inline'", "netdna.bootstrapcdn.com"],
+          "img-src": ["'self'", "data:", "img.shields.io"],
+          "frame-src": ["'self'", "ghbtns.com"],
+        },
+      },
     })
   );
   app.use(requireHttps);
@@ -50,41 +50,44 @@ module.exports = function(app, passport) {
   // Compression middleware (should be placed before express.static)
   app.use(
     compression({
-      threshold: 512
+      threshold: 512,
     })
   );
 
   app.use(
     cors({
-      origin: ['http://localhost:3000', 'https://reboil-demo.herokuapp.com'],
+      origin: [
+        "http://localhost:3000",
+        "https://heroku-express-node-mongoose.herokuapp.com/",
+      ],
       optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-      credentials: true
+      credentials: true,
     })
   );
 
   // Static files middleware
-  app.use(express.static(config.root + '/public'));
+  app.use(express.static(config.root + "/public"));
 
   // Use winston on production
-  let log = 'dev';
-  if (env !== 'development') {
+  let log = "dev";
+  if (env !== "development") {
     log = {
       stream: {
-        write: message => winston.info(message)
-      }
+        write: (message) => winston.info(message),
+      },
     };
   }
 
   // Don't log during tests
   // Logging middleware
-  if (env !== 'test') app.use(morgan(log));
+  if (env !== "test") app.use(morgan(log));
 
   // set views path, template engine and default layout
-  app.set('views', config.root + '/app/views');
-  app.set('view engine', 'pug');
+  app.set("views", config.root + "/app/views");
+  app.set("view engine", "pug");
 
   // expose package.json to views
-  app.use(function(req, res, next) {
+  app.use(function (req, res, next) {
     res.locals.pkg = pkg;
     res.locals.env = env;
     next();
@@ -93,10 +96,10 @@ module.exports = function(app, passport) {
   // bodyParser should be above methodOverride
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(upload.single('image'));
+  app.use(upload.single("image"));
   app.use(
-    methodOverride(function(req) {
-      if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    methodOverride(function (req) {
+      if (req.body && typeof req.body === "object" && "_method" in req.body) {
         // look in urlencoded POST bodies and delete it
         var method = req.body._method;
         delete req.body._method;
@@ -114,8 +117,8 @@ module.exports = function(app, passport) {
       secret: pkg.name,
       store: MongoStore.create({
         mongoUrl: config.db,
-        collection: 'sessions'
-      })
+        collection: "sessions",
+      }),
     })
   );
 
@@ -129,18 +132,18 @@ module.exports = function(app, passport) {
   // should be declared after session and flash
   app.use(helpers(pkg.name));
 
-  if (env !== 'test') {
+  if (env !== "test") {
     app.use(csrf());
 
     // This could be moved to view-helpers :-)
-    app.use(function(req, res, next) {
+    app.use(function (req, res, next) {
       res.locals.csrf_token = req.csrfToken();
       res.locals.paginate = ultimatePagination.getPaginationModel;
       next();
     });
   }
 
-  if (env === 'development') {
+  if (env === "development") {
     app.locals.pretty = true;
   }
 };
